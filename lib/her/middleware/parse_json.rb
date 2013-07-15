@@ -3,6 +3,10 @@ module Her
     class ParseJSON < Faraday::Response::Middleware
       # @private
       def parse_json(body = nil)
+        if Her::API.default_api.options[:accept_empty_responses]
+          return {} if body.blank?
+        end
+
         body ||= '{}'
         message = "Response from the API must behave like a Hash or an Array (last JSON response was #{body.inspect})"
 
