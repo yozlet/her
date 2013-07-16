@@ -54,4 +54,24 @@ describe Her::Middleware::FirstLevelParseJSON do
       end
     end
   end
+
+  context 'with empty responses' do
+    let(:body) { '' }
+
+    context 'when accepts_empty_responses is not set' do
+      it 'raises an error' do
+        expect { subject.parse(body) }.to raise_error(Her::Errors::ParseError, 'Response from the API must behave like a Hash or an Array (last JSON response was "")')
+      end
+    end
+
+    context 'when accepts_empty_responses is set' do
+      before do
+        Her::API.default_api.options[:accept_empty_responses] = true
+      end
+
+      it 'returns an empty hash' do
+        expect(subject.parse(body)[:data]).to eql({})
+      end
+    end
+  end
 end
